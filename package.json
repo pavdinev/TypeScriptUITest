@@ -1,0 +1,23 @@
+{
+  "name": "shop-years-ui-tests",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "pwsh -NoProfile -c \"npx playwright test --debug\"",
+    "lint": "eslint . --ext .ts,.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "typescript": "^5.9.3"
+  },
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
