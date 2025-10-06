@@ -3,9 +3,8 @@ import { SearchPage } from '../pages/SearchPage';
 
 test('Search persistence across navigation', async ({ page }) => {
   const search = new SearchPage(page);
-  console.log('Before goto:', page.url()); // Should be about:blank
   await search.goto();                   // Will resolve to https://shop.years.com/
-  console.log('After goto:', page.url());  // Should now be https://shop.years.com/
+
 
   // Perform search
   const q = 'vintage watch';

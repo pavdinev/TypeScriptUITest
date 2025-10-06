@@ -1,16 +1,14 @@
-import { Page, Locator } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { ProductCard } from '../components/ProductCard';
 
-export class ProductPage {
+export class ProductsPage {
   readonly page: Page;
-  readonly productTitle: Locator;
-  readonly priceLocator: Locator;
+  readonly productCardsLocator: any; // Locator for product cards
 
   constructor(page: Page) {
     this.page = page;
-    this.productTitle = page.locator('[data-test="product-title"]');
-    this.priceLocator = page.locator('[data-test="product-price"]');
+    this.productCardsLocator = page.locator('div.grid > div'); // All product cards
   }
 
-  async getTitle() { return this.productTitle.innerText(); }
-  async getPriceText() { return this.priceLocator.innerText(); }
+  // Tests or components will wrap each card with ProductCard dynamically
 }

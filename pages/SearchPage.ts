@@ -1,57 +1,21 @@
-import { Page, Locator, expect } from '@playwright/test';
-
+import { Page } from '@playwright/test';
+import { Field } from '../components/Field';
+import { ProductCard } from '../components/ProductCard';
 
 export class SearchPage {
   readonly page: Page;
-  readonly searchInput: Locator;
-  readonly productItems: Locator;
-  readonly productTitle: Locator;
-  readonly productPrice: Locator;
-  readonly baseURL: string;
+  readonly searchInput: Field;
+  readonly productCardsLocator: any; // Locator for search result cards
 
   constructor(page: Page) {
     this.page = page;
-    
-    this.searchInput = page.locator('[data-test="search-input"]'); // TODO: update selector to match app
-    this.productItems = page.locator('[data-test="product-item"]');
-    this.productTitle = page.locator('[data-test="product-title"]');
-    this.productPrice = page.locator('[data-test="product-price"]');
+
+    // Wrap the search input with Field component
+    this.searchInput = new Field(page, 'header input[placeholder="Search..."]:visible', 'Search Input');
+
+    // Locator for all search result product cards
+    this.productCardsLocator = page.locator('[data-test="product-item"]');
   }
 
-  async goto() {
-    
-    await this.page.goto('/');
-    await this.page.waitForLoadState('domcontentloaded');
-  }
-
-  async searchFor(query: string) {
-    await this.searchInput.fill(query);
-    // press Enter to submit; if app has search button use that instead
-    await Promise.all([
-      this.page.waitForResponse(r => r.url().includes('/api/search') && r.status() === 200),
-      this.searchInput.press('Enter'),
-    ]);
-    await this.page.waitForLoadState('networkidle');
-  }
-
-  async resultsCount() {
-    return this.productItems.count();
-  }
-
-  async resultTitles() {
-    return this.productTitle.allInnerTexts();
-  }
-
-  async openResult(index = 0) {
-    await this.productItems.nth(index).click();
-    await this.page.waitForLoadState('networkidle');
-  }
-
-  async pricesArray(): Promise<number[]> {
-    const texts = await this.productPrice.allTextContents();
-    return texts.map(t => {
-      const num = parseFloat(t.replace(/[^\d.,-]/g, '').replace(',', '.'));
-      return Number.isFinite(num) ? num : NaN;
-    }).filter(n => !Number.isNaN(n));
-  }
+  // Tests will dynamically create ProductCard instances from productCardsLocator
 }
