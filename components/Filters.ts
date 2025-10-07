@@ -32,4 +32,37 @@ export class FiltersComponent {
     this.protein = new Button(page, 'button:has-text("Protein")', 'Protein');
     this.allProteins = new Button(page, 'button:has-text("All Proteins")', 'All Proteins');
   }
+
+  /**
+   * Opens the correct dropdown and clicks the target option.
+   */
+  async applyFilter(filterValue: string) {
+    const sortFilters = ['Price: High to Low', 'Price: Low to High', 'Newest First'];
+    const productTypes = ['All Products', 'Toppers', 'Meals', 'Treats', 'Wellness', 'Accessories'];
+    const proteins = ['All Proteins', 'Chicken', 'Beef', 'Vegan'];
+
+    if (productTypes.includes(filterValue)) {
+  await this.productType.scrollAndClick();
+  const button = new Button(
+    this.page,
+    `button:has-text("${filterValue}"), li:has-text("${filterValue}"), span:has-text("${filterValue}")`,
+    filterValue
+  );
+  await button.scrollAndClick();
+  return;
+}
+
+if (proteins.includes(filterValue)) {
+  await this.protein.scrollAndClick();
+  const button = new Button(
+    this.page,
+    `button:has-text("${filterValue}"), li:has-text("${filterValue}"), span:has-text("${filterValue}")`,
+    filterValue
+  );
+  await button.scrollAndClick();
+  return;
+}
+
+    throw new Error(`❌ No matching filter found for: ${filterValue}`);
+  }
 }

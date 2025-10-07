@@ -1,77 +1,87 @@
 import { test, expect, Page } from '@playwright/test';
-import { SearchPage } from '../pages/SearchPage';
+import { HomePage } from '../Pages/homePage';
 import { FiltersComponent } from '../components/Filters';
 
-// Define categories from header
-const categories = ['Best Sellers', 'Adult Meals', 'Snacks']; // Add all header categories
-
-// Define sort options
-const sortOptions = ['Price: Low to High', 'Price: High to Low', 'Newest First'];
-
-// Define random filter combinations
-const randomFilters = [
-  { productType: 'Meal', protein: 'Chicken', sort: 'Price: Low to High' },
-  { productType: 'Snack', protein: 'Beef', sort: 'Price: High to Low' },
-  { productType: 'Meal', protein: 'Vegan', sort: 'Newest First' }
+// Categories (header buttons)
+const categories = [
+  'Best Sellers',
+  'Adult Meals',
+  'Snacks',
+  'Puppy Meals',
+  'Toppers',
+  'Treats & Extras'
 ];
 
+// Sort options
+const sortOptions = ['Price: Low to High', 'Price: High to Low', 'Newest First'];
+
+// Random filter combinations
+const randomFilters = [
+  { productType: 'Meal', protein: 'Chicken', sort: 'Price: Low to High' },
+  { productType: 'Meal', protein: 'Vegan', sort: 'Newest First' },
+  { productType: 'Treats', protein: 'Beef', sort: 'Price: High to Low' },
+];
+
+// 🔧 Helper: Extract prices
 async function getProductPrices(page: Page) {
-  // Adjust selector to match product price element
   const pricesText = await page.$$eval('.product-price', nodes =>
     nodes.map(n => n.textContent?.replace(/[^0-9.]/g, ''))
   );
   return pricesText.map(p => parseFloat(p!));
 }
 
-async function applyFilters(page: Page, filters: { productType: string; protein: string; sort: string }, filtersComponent: FiltersComponent) {
-  // Set product type and protein filters
+// 🔧 Helper: Apply filters via FiltersComponent
+async function applyFilters(
+  filtersComponent: FiltersComponent,
+  filters: { productType: string; protein: string; sort: string }
+) {
   await filtersComponent.applyFilter(filters.productType);
   await filtersComponent.applyFilter(filters.protein);
-  // Set sort by filter
   await filtersComponent.applyFilter(filters.sort);
 }
 
-categories.forEach(category => {
-  test.describe(`Category: ${category}`, () => {
+// ✅ Parallelized test blocks
+for (const category of categories) {
+  test.describe.parallel(`Category: ${category}`, () => {
     test.beforeEach(async ({ page }) => {
-      const searchPage = new SearchPage(page);
-      await searchPage.navigate();
-      // Click category link in header
-      await page.click(`header >> text=${category}`);
+      await page.goto('/');
+      const homePage = new HomePage(page);
+
+      // Access button dynamically from the map
+      const categoryButton = homePage.categoryButtons[category];
+      await categoryButton.scrollAndClick();
     });
 
-    // First test: all sort options with default product type and protein
-    sortOptions.forEach(sort => {
+    // 🧭 Test all sort options with default filters
+    for (const sort of sortOptions) {
       test(`Sort by "${sort}" with all products and all protein`, async ({ page }) => {
         const filters = new FiltersComponent(page);
-
-        await applyFilters(page, { productType: 'All Products', protein: 'All Protein', sort }, filters);
+        await applyFilters(filters, {
+          productType: 'All Products',
+          protein: 'All Proteins',
+          sort,
+        });
 
         const prices = await getProductPrices(page);
         expect(prices.length).toBeGreaterThan(0);
 
-        // Verify price sorting if applicable
         if (sort === 'Price: Low to High') {
-          const sorted = [...prices].sort((a, b) => a - b);
-          expect(prices).toEqual(sorted);
+          expect(prices).toEqual([...prices].sort((a, b) => a - b));
         } else if (sort === 'Price: High to Low') {
-          const sorted = [...prices].sort((a, b) => b - a);
-          expect(prices).toEqual(sorted);
+          expect(prices).toEqual([...prices].sort((a, b) => b - a));
         }
       });
-    });
+    }
 
-    // Random combinations tests
-    randomFilters.forEach(f => {
+    // 🧪 Random filter combinations
+    for (const f of randomFilters) {
       test(`Random filter: Product=${f.productType}, Protein=${f.protein}, Sort=${f.sort}`, async ({ page }) => {
         const filters = new FiltersComponent(page);
-        await applyFilters(page, f, filters);
+        await applyFilters(filters, f);
 
         const prices = await getProductPrices(page);
         expect(prices.length).toBeGreaterThan(0);
-
-        // Optional: further assertions based on filter logic (e.g., product type text check)
       });
-    });
+    }
   });
-});
+}
