@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test';
 import { Field } from '../components/Field';
-import { ProductCard } from '../components/ProductCard';
+
 
 export class SearchPage {
   readonly page: Page;

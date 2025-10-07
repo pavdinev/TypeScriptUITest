@@ -3,6 +3,7 @@ import { Button } from '../components/Button';
 
 export class HomePage {
   readonly page: Page;
+  categoryButtons: Record<string, Button>;
 
   // Header categories wrapped in Button components
   readonly bestSellers: Button;
@@ -12,12 +13,13 @@ export class HomePage {
   readonly treatsExtras: Button;
 
   constructor(page: Page) {
-    this.page = page;
-
-    this.bestSellers = new Button(page, 'a[href="/collections/best-sellers"]', 'Best Sellers');
-    this.adultMeals = new Button(page, 'a[href="/collections/adult-meals"]', 'Adult Meals');
-    this.puppyMeals = new Button(page, 'a[href="/collections/puppy-meals"]', 'Puppy Meals');
-    this.toppers = new Button(page, 'a[href="/collections/toppers"]', 'Toppers');
-    this.treatsExtras = new Button(page, 'a[href="/collections/treats-extras"]', 'Treats & Extras');
+    this.categoryButtons = {
+      'Best Sellers': new Button(page, 'a[href="/collections/best-sellers"]', 'Best Sellers'),
+      'Adult Meals': new Button(page, 'a[href="/collections/adult-meals"]', 'Adult Meals'),
+      'Snacks': new Button(page, 'a[href="/collections/snacks"]', 'Snacks'),
+      'Puppy Meals': new Button(page, 'a[href="/collections/puppy-meals"]', 'Puppy Meals'),
+      'Toppers': new Button(page, 'a[href="/collections/toppers"]', 'Toppers'),
+      'Treats & Extras': new Button(page, 'a[href="/collections/treats-extras"]', 'Treats & Extras'),
+    };
   }
 }

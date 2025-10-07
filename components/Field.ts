@@ -1,53 +1,28 @@
-import { Page } from '@playwright/test';
-import { Button } from './Button';
+import { Page, Locator, expect } from '@playwright/test';
 
-export class Filters {
-  sortBy: Button;
-  sortHighToLow: Button;
-  sortLowToHigh: Button;
-  sortNewest: Button;
+export class Field {
+  page: Page;
+  selector: string;
+  name: string;
+  locator: Locator;
 
-  productType: Button;
-  allProducts: Button;
-
-  protein: Button;
-  allProteins: Button;
-
-  constructor(page: Page) {
-    this.sortBy = new Button(page, 'button:has-text("Sort by")');
-    this.sortHighToLow = new Button(page, 'button:has-text("High to Low")');
-    this.sortLowToHigh = new Button(page, 'button:has-text("Low to High")');
-    this.sortNewest = new Button(page, 'button:has-text("Newest")');
-
-    this.productType = new Button(page, 'button:has-text("Product Type")');
-    this.allProducts = new Button(page, 'button:has-text("All Products")');
-
-    this.protein = new Button(page, 'button:has-text("Protein")');
-    this.allProteins = new Button(page, 'button:has-text("All Proteins")');
+  constructor(page: Page, selector: string, name?: string) {
+    this.page = page;
+    this.selector = selector;
+    this.name = name || selector;
+    this.locator = page.locator(selector);
   }
 
-  async selectSort(option: 'highToLow' | 'lowToHigh' | 'newest') {
-    await this.sortBy.scrollAndClick();
-    switch(option) {
-      case 'highToLow': await this.sortHighToLow.scrollAndClick(); break;
-      case 'lowToHigh': await this.sortLowToHigh.scrollAndClick(); break;
-      case 'newest': await this.sortNewest.scrollAndClick(); break;
-    }
+  async exists() {
+    await expect(this.locator).toBeVisible({ timeout: 5000 });
   }
 
-  async selectProductType(name: string) {
-    await this.productType.scrollAndClick();
-    await this.page.locator(`text=${name}`).click();
+  async fill(value: string) {
+    await this.locator.scrollIntoViewIfNeeded();
+    await this.locator.fill(value);
   }
 
-  async selectProtein(name: string) {
-    await this.protein.scrollAndClick();
-    await this.page.locator(`text=${name}`).click();
-  }
-
-  async resetFilters() {
-    await this.selectProductType('All Products');
-    await this.selectProtein('All Proteins');
-    await this.selectSort('newest');
+  async checkValue(expectedValue: string) {
+    await expect(this.locator).toHaveValue(expectedValue);
   }
 }
