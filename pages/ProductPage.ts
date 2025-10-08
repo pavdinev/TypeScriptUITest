@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import { ProductCard } from '../components/ProductCard';
 
-export class ProductsPage {
+export class ProductPage {
   readonly page: Page;
   readonly productCardsLocator: any; // Locator for product cards
 

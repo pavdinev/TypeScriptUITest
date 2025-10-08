@@ -1,80 +1,51 @@
-import { Locator, Page, test, expect } from '@playwright/test';
+import { expect, Page, Locator } from '@playwright/test';
 
 export class Button {
-  readonly page: Page;
-  readonly locator: Locator;
-  readonly name: string;
+  page: Page;
+  selector: string;
+  name: string;
+  locator: Locator;
 
-  constructor(page: Page, selector: string, name: string) {
+ constructor(page: Page, selectorOrLocator: string | Locator, name?: string) {
     this.page = page;
-    this.locator = page.locator(selector);
-    this.name = name;
+    this.name = name || (typeof selectorOrLocator === 'string' ? selectorOrLocator : 'unnamed');
+    this.locator =
+      typeof selectorOrLocator === 'string'
+        ? page.locator(selectorOrLocator)
+        : selectorOrLocator;
   }
 
-  async click() {
-    await test.step(`Clicking on button: ${this.name}`, async () => {
-      try {
-        await this.locator.click();
-      } catch (error) {
-        await this.captureError('click', error);
-      }
-    });
+ async exists(timeout = 5000) {
+  try {
+    // Scroll element into view first
+    await this.locator.scrollIntoViewIfNeeded();
+    // Then check visibility
+    await expect(this.locator).toBeVisible({ timeout });
+  } catch (error) {
+    await this.captureError('exists', error);
+  }
+}
+
+async scrollAndClick(timeout = 10000) {
+  try {
+    await this.locator.waitFor({ state: 'visible', timeout });
+    await this.locator.scrollIntoViewIfNeeded();
+    await this.locator.click({ timeout });
+  } catch (error) {
+    const screenshotPath = `test-results/error-${this.name.replace(/\s+/g, '_')}-scrollAndClick.png`;
+    await this.page.screenshot({ path: screenshotPath });
+    throw new Error(
+      `Failed to scrollAndClick button "${this.name}". Screenshot saved at ${screenshotPath}. Error: ${error}`
+    );
+  }
+}
+
+
+  async checkText(expectedText: string) {
+    await expect(this.locator).toHaveText(expectedText);
   }
 
-  async scrollAndClick() {
-    await test.step(`Scrolling to and clicking button: ${this.name}`, async () => {
-      try {
-        await this.locator.first().scrollIntoViewIfNeeded();
-        await this.locator.first().click();
-      } catch (error) {
-        await this.captureError('scrollAndClick', error);
-      }
-    });
-  }
-
-  async hover() {
-    await test.step(`Hovering over button: ${this.name}`, async () => {
-      try {
-        await this.locator.hover();
-      } catch (error) {
-        await this.captureError('hover', error);
-      }
-    });
-  }
-
-  async doubleClick() {
-    await test.step(`Double clicking button: ${this.name}`, async () => {
-      try {
-        await this.locator.dblclick();
-      } catch (error) {
-        await this.captureError('doubleClick', error);
-      }
-    });
-  }
-
-  async isVisible(): Promise<boolean> {
-    return await this.locator.isVisible();
-  }
-
-  async isEnabled(): Promise<boolean> {
-    return await this.locator.isEnabled();
-  }
-
-  async getText(): Promise<string> {
-    return (await this.locator.textContent())?.trim() || '';
-  }
-
-  async waitForVisible(timeout: number = 5000) {
-    await test.step(`Waiting for button: ${this.name} to be visible`, async () => {
-      try {
-        await this.locator.waitFor({ state: 'visible', timeout });
-      } catch (error) {
-        await this.captureError('waitForVisible', error);
-      }
-    });
-  }
-
-  private async captureError(action: string, error: unknown) {
+  private async captureError(action: string, error: any) {
     const screenshotPath = `test-results/error-${this.name.replace(/\s+/g, '_')}-${action}.png`;
     await this.page.screenshot({ path: screenshotPath });
     throw new Error(

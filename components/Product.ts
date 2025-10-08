@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test';
-import { ProductsPage } from '../pages/ProductsPage';
+import { ProductPage } from '../pages/ProductsPage';
 
 export interface ProductData {
   name: string;
@@ -12,7 +12,7 @@ export class Product {
   nameSelector: string;
   priceSelector: string;
 
-  constructor(page: Page, productsPage: ProductsPage) {
+  constructor(page: Page, productsPage: ProductPage) {
     this.page = page;
     this.productCards = productsPage.productCards;
     this.nameSelector = productsPage.productName;

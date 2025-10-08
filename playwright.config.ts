@@ -11,7 +11,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
 
   // ✅ Worker count (set explicitly)
-  workers: process.env.CI ? 4 : 4, // Always define a number, never undefined
+  workers: process.env.CI ? 4 : 50, // Always define a number, never undefined
 
   use: {
     baseURL: 'https://shop.years.com',
