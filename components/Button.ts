@@ -26,21 +26,19 @@ export class Button {
   }
 }
 
-async scrollAndClick(timeout = 10000) {
-  try {
-    await this.locator.waitFor({ state: 'visible', timeout });
-    await this.locator.scrollIntoViewIfNeeded();
-    await this.locator.click({ timeout });
-  } catch (error) {
-    const screenshotPath = `test-results/error-${this.name.replace(/\s+/g, '_')}-scrollAndClick.png`;
-    await this.page.screenshot({ path: screenshotPath });
-    throw new Error(
-      `Failed to scrollAndClick button "${this.name}". Screenshot saved at ${screenshotPath}. Error: ${error}`
-    );
+  async scrollAndClick(timeout = 10000) {
+    try {
+      await this.locator.waitFor({ state: 'visible', timeout });
+      await this.locator.scrollIntoViewIfNeeded();
+      await this.locator.click({ timeout });
+    } catch (error) {
+      const screenshotPath = `test-results/error-${this.name.replace(/\s+/g, '_')}-scrollAndClick.png`;
+      await this.page.screenshot({ path: screenshotPath });
+      throw new Error(
+        `Failed to scrollAndClick button "${this.name}". Screenshot saved at ${screenshotPath}. Error: ${error}`
+      );
+    }
   }
-}
-
-
   async checkText(expectedText: string) {
     await expect(this.locator).toHaveText(expectedText);
   }

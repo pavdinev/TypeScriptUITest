@@ -1,87 +1,108 @@
-import { test, expect, Page } from '@playwright/test';
-import { HomePage } from '../Pages/homePage';
+import { test, expect } from '@playwright/test';
 import { FiltersComponent } from '../components/Filters';
+import { ProductPage } from '../pages/ProductPage';
 
-// Categories (header buttons)
-const categories = [
-  'Best Sellers',
-  'Adult Meals',
-  'Snacks',
-  'Puppy Meals',
-  'Toppers',
-  'Treats & Extras'
-];
+// Utility: random item helper
+function getRandom<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
 
-// Sort options
+// Common filter options
+const productTypes = ['All Products', 'Toppers', 'Meals', 'Treats', 'Wellness', 'Accessories'];
+const proteinTypes = ['All Protein', 'Chicken', 'Beef', 'Fish', 'Turkey'];
 const sortOptions = ['Price: Low to High', 'Price: High to Low', 'Newest First'];
 
-// Random filter combinations
-const randomFilters = [
-  { productType: 'Meal', protein: 'Chicken', sort: 'Price: Low to High' },
-  { productType: 'Meal', protein: 'Vegan', sort: 'Newest First' },
-  { productType: 'Treats', protein: 'Beef', sort: 'Price: High to Low' },
-];
+// Base URL is taken from playwright.config.ts (use.baseURL)
+test.beforeEach(async ({ page }) => {
+  await page.goto('/');
+});
 
-// 🔧 Helper: Extract prices
-async function getProductPrices(page: Page) {
-  const pricesText = await page.$$eval('.product-price', nodes =>
-    nodes.map(n => n.textContent?.replace(/[^0-9.]/g, ''))
-  );
-  return pricesText.map(p => parseFloat(p!));
-}
+//
+// --------------- CATEGORY: BEST SELLERS ---------------
+//
+test.describe.parallel('Category: Best Sellers', () => {
+  test('Random filter combination', async ({ page }) => {
+    const filters = new FiltersComponent(page);
+    const productPage = new ProductPage(page);
 
-// 🔧 Helper: Apply filters via FiltersComponent
-async function applyFilters(
-  filtersComponent: FiltersComponent,
-  filters: { productType: string; protein: string; sort: string }
-) {
-  await filtersComponent.applyFilter(filters.productType);
-  await filtersComponent.applyFilter(filters.protein);
-  await filtersComponent.applyFilter(filters.sort);
-}
+    const product = getRandom(productTypes);
+    const protein = getRandom(proteinTypes);
+    const sort = getRandom(sortOptions);
 
-// ✅ Parallelized test blocks
-for (const category of categories) {
-  test.describe.parallel(`Category: ${category}`, () => {
-    test.beforeEach(async ({ page }) => {
-      await page.goto('/');
-      const homePage = new HomePage(page);
-
-      // Access button dynamically from the map
-      const categoryButton = homePage.categoryButtons[category];
-      await categoryButton.scrollAndClick();
-    });
-
-    // 🧭 Test all sort options with default filters
-    for (const sort of sortOptions) {
-      test(`Sort by "${sort}" with all products and all protein`, async ({ page }) => {
-        const filters = new FiltersComponent(page);
-        await applyFilters(filters, {
-          productType: 'All Products',
-          protein: 'All Proteins',
-          sort,
-        });
-
-        const prices = await getProductPrices(page);
-        expect(prices.length).toBeGreaterThan(0);
-
-        if (sort === 'Price: Low to High') {
-          expect(prices).toEqual([...prices].sort((a, b) => a - b));
-        } else if (sort === 'Price: High to Low') {
-          expect(prices).toEqual([...prices].sort((a, b) => b - a));
-        }
-      });
-    }
-
-    // 🧪 Random filter combinations
-    for (const f of randomFilters) {
-      test(`Random filter: Product=${f.productType}, Protein=${f.protein}, Sort=${f.sort}`, async ({ page }) => {
-        const filters = new FiltersComponent(page);
-        await applyFilters(filters, f);
-
-        const prices = await getProductPrices(page);
-        expect(prices.length).toBeGreaterThan(0);
-      });
-    }
+    console.log(`🧩 Testing Best Sellers: ${product}, ${protein}, ${sort}`);
+    await filters.applyFilter(product, protein, sort);
+    await productPage.verifyProductsFilteredCorrectly(sort);
   });
-}
+});
+
+//
+// --------------- CATEGORY: ADULT MEALS ---------------
+//
+test.describe.parallel('Category: Adult Meals', () => {
+  test('Random filter combination', async ({ page }) => {
+    const filters = new FiltersComponent(page);
+    const productPage = new ProductPage(page);
+
+    const product = getRandom(productTypes);
+    const protein = getRandom(proteinTypes);
+    const sort = getRandom(sortOptions);
+
+    console.log(`🧩 Testing Adult Meals: ${product}, ${protein}, ${sort}`);
+    await filters.applyFilter(product, protein, sort);
+    await productPage.verifyProductsFilteredCorrectly(sort);
+  });
+});
+
+//
+// --------------- CATEGORY: PUPPY MEALS ---------------
+//
+test.describe.parallel('Category: Puppy Meals', () => {
+  test('Random filter combination', async ({ page }) => {
+    const filters = new FiltersComponent(page);
+    const productPage = new ProductPage(page);
+
+    const product = getRandom(productTypes);
+    const protein = getRandom(proteinTypes);
+    const sort = getRandom(sortOptions);
+
+    console.log(`🧩 Testing Puppy Meals: ${product}, ${protein}, ${sort}`);
+    await filters.applyFilter(product, protein, sort);
+    await productPage.verifyProductsFilteredCorrectly(sort);
+  });
+});
+
+//
+// --------------- CATEGORY: TOPPERS ---------------
+//
+test.describe.parallel('Category: Toppers', () => {
+  test('Random filter combination', async ({ page }) => {
+    const filters = new FiltersComponent(page);
+    const productPage = new ProductPage(page);
+
+    const product = getRandom(productTypes);
+    const protein = getRandom(proteinTypes);
+    const sort = getRandom(sortOptions);
+
+    console.log(`🧩 Testing Toppers: ${product}, ${protein}, ${sort}`);
+    await filters.applyFilter(product, protein, sort);
+    await productPage.verifyProductsFilteredCorrectly(sort);
+  });
+});
+
+//
+// --------------- CATEGORY: TREATS & EXTRAS ---------------
+//
+test.describe.parallel('Category: Treats & Extras', () => {
+  test('Random filter combination', async ({ page }) => {
+    const filters = new FiltersComponent(page);
+    const productPage = new ProductPage(page);
+
+    const product = getRandom(productTypes);
+    const protein = getRandom(proteinTypes);
+    const sort = getRandom(sortOptions);
+
+    console.log(`🧩 Testing Treats & Extras: ${product}, ${protein}, ${sort}`);
+    await filters.applyFilter(product, protein, sort);
+    await productPage.verifyProductsFilteredCorrectly(sort);
+  });
+});
