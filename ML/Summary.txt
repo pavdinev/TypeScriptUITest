@@ -1,0 +1,121 @@
+  ┌──────────────────┐
+                           │   Data Sources    │
+                           │------------------│
+                           │ Sales / Inventory│
+                           │ Customer Behavior│
+                           │ Seasonal / Trends│
+                           └────────┬─────────┘
+                                    │
+                                    ▼
+                     ┌─────────────────────────────┐
+                     │     LangChain Orchestration │
+                     │-----------------------------│
+                     │ Connects all AI Models:     │
+                     │ - Demand Forecasting        │
+                     │ - Customer Segmentation     │
+                     │ - Campaign Scheduling       │
+                     └────────┬────────────────────┘
+                              │
+       ┌──────────────────────┼─────────────────────┐
+       │                      │                     │
+       ▼                      ▼                     ▼
+┌───────────────┐       ┌───────────────┐     ┌───────────────┐
+│ Demand Forecast│       │ Segmentation &│     │ Campaign      │
+│ (Time Series)  │       │ Churn Predict │     │ Scheduling    │
+│---------------│       │---------------│     │ Recommender   │
+│ Predict future │       │ Target key    │     │ Suggest best  │
+│ demand trends  │       │ customer segs │     │ campaign time │
+└───────────────┘       └───────────────┘     └───────────────┘
+       │                      │                     │
+       └───────────────┬──────┴───────────┬─────────┘
+                       ▼                  ▼
+                  ┌─────────────────────────────┐
+                  │      Claude MCP              │
+                  │-----------------------------│
+                  │ Summarizes model outputs in │
+                  │ natural language for        │
+                  │ marketing team insights     │
+                  └───────────────┬─────────────┘
+                                  │
+                                  ▼
+                          ┌─────────────┐
+                          │   n8n       │
+                          │ Automation │
+                          │-------------│
+                          │ Executes    │
+                          │ campaigns,  │
+                          │ dashboards, │
+                          │ alerts ops  │
+                          └─────┬───────┘
+                                │
+                                ▼
+                     ┌─────────────────────┐
+                     │ Marketing & Ops     │
+                     │---------------------│
+                     │ Personalized campaigns│
+                     │ Inventory alignment  │
+                     │ Customer engagement  │
+                     └───────────┬─────────┘
+                                 ▼
+                         ┌─────────────┐
+                         │ Feedback    │
+                         │ Loop        │
+                         │ Updates all │
+                         │ models for  │
+                         │ continuous  │
+                         │ learning    │
+                         └─────────────┘
+						 
+						 Summary of Blocks for Presentation
+
+Data Sources
+
+Sales, inventory, customer behavior, seasonal and trend data.
+
+Provides the raw material for all AI models.
+
+LangChain Orchestration
+
+Connects all AI models into a unified workflow.
+
+Ensures outputs from demand forecasting, segmentation, and campaign scheduling work together seamlessly.
+
+Demand Forecasting (Time-Series Model)
+
+Predicts future demand trends.
+
+Helps reduce overstock/understock and aligns marketing campaigns with expected product demand.
+
+Segmentation & Churn Prediction
+
+Identifies high-value customer segments and predicts churn risk.
+
+Enables targeted campaigns to improve retention and engagement.
+
+Campaign Scheduling Recommender
+
+Suggests optimal timing and sequencing of campaigns based on demand and inventory.
+
+Improves campaign effectiveness and ROI.
+
+Claude MCP
+
+Summarizes AI outputs in natural language for the marketing team.
+
+Makes insights accessible, actionable, and easy to communicate.
+
+n8n Automation
+
+Executes recommended campaigns, updates dashboards, triggers alerts to operations.
+
+Reduces manual work and ensures operational alignment.
+
+Marketing & Operations
+
+Uses AI insights to deliver personalized campaigns, align inventory with demand, and engage customers effectively.
+
+Feedback Loop
+
+Campaign and inventory outcomes feed back into models for continuous improvement.
+
+Ensures AI predictions and recommendations become more accurate over time.
