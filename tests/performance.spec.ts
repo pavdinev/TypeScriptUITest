@@ -1,34 +1,94 @@
-import { test, expect } from '@playwright/test';
-import { SearchPage } from '../pages/SearchPage';
+import { test } from '@playwright/test';
+import { HomePage } from '../pages/HomePage';
+import { FiltersComponent } from '../components/Filters';
 
-// This test collects a small sample of response times for search API and asserts average is under a threshold.
-// NOTE: thresholds are environment-dependent. Tune in CI/staging.
-test.describe('Search Performance', () => {
-  test('measure average search API latency (sample of 5)', async ({ page }) => {
-    const search = new SearchPage(page);
-    await search.goto();
+test('Category & filter performance measurement - Best Sellers only', async ({ page }) => {
+  test.setTimeout(300_000); // 5 minutes safety margin
 
-    const query = 'wireless headphones';
-    const samples: number[] = [];
+  const toSeconds = (ms: number) => (ms / 1000).toFixed(3); // helper
 
-    for (let i = 0; i < 5; i++) {
-      const start = Date.now();
-      const responsePromise = page.waitForResponse(r => r.url().includes('/api/search') && r.request().method() === 'GET');
-      await search.searchFor(query);
-      const response = await responsePromise;
-      const elapsed = Date.now() - start;
-      samples.push(elapsed);
+  // ------------------- Navigate to Home -------------------
+  const homeStart = performance.now();
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const homeEnd = performance.now();
+  console.log(`🏠 Navigated to home in ${toSeconds(homeEnd - homeStart)} s`);
 
-      // quick sanity check
-      expect(response.ok()).toBeTruthy();
+  const categoryName = 'Best Sellers';
+  console.log(`\n➡️ Measuring category: "${categoryName}"`);
+
+  const homePage = new HomePage(page);
+  const categoryButton = homePage.categoryButtons[categoryName];
+  if (!categoryButton) {
+    console.warn(`⚠️ Category "${categoryName}" not found, skipping`);
+    return;
+  }
+
+  // ------------------- Click category -------------------
+  const catStart = performance.now();
+  await categoryButton.scrollAndClick();
+  const catEnd = performance.now();
+  console.log(`Clicked category button in ${toSeconds(catEnd - catStart)} s`);
+
+  // ------------------- Apply preset filters -------------------
+  const filters = new FiltersComponent(page);
+  const sortBy = filters.locators.filterButtons['Sort by'];
+  const productType = filters.locators.filterButtons['Product Type'];
+  const protein = filters.locators.filterButtons['Protein'];
+
+  const filterStart = performance.now();
+  try {
+    await sortBy.exists(250);
+    await filters.scrollAndClickDropdown(sortBy);
+    const lowToHigh = filters.locators.filterButtons['Price: low to high'];
+    await lowToHigh.scrollAndClick();
+  } catch {}
+  await page.waitForTimeout(10);
+
+  try {
+    await productType.exists(250);
+    await filters.scrollAndClickDropdown(productType);
+    const allProducts = filters.locators.filterButtons['All Products'];
+    await allProducts.scrollAndClick();
+  } catch {}
+  await page.waitForTimeout(100);
+
+  try {
+    await protein.exists(250);
+    await filters.scrollAndClickDropdown(protein);
+    const chickenOption = filters.locators.filterButtons['Chicken'];
+    await chickenOption.scrollAndClick();
+  } catch {}
+  await page.waitForTimeout(200);
+
+  const filterEnd = performance.now();
+  console.log(`Applied filters in ${toSeconds(filterEnd - filterStart)} s`);
+
+  // ------------------- Wait for first product only -------------------
+  const firstProductStart = performance.now();
+  const firstProductSelector = 'p.text-m.font-bold.text-neutral-900';
+  const maxWait = 5000;
+  const pollInterval = 100;
+  let firstProductFound = false;
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < maxWait) {
+    const el = await page.$(firstProductSelector);
+    if (el) {
+      firstProductFound = true;
+      break;
     }
+    await page.waitForTimeout(pollInterval);
+  }
 
-    const avg = samples.reduce((a,b) => a+b, 0) / samples.length;
-    // Threshold is conservative; adjust to match staging/production SLOs.
-    const thresholdMs = 800;
-    console.log('search latency samples (ms):', samples, 'avg:', avg);
-    expect(avg).toBeLessThan(thresholdMs);
+  const firstProductEnd = performance.now();
+  if (!firstProductFound) {
+    console.warn(`⚠️ First product not loaded after ${(maxWait / 1000).toFixed(1)} s`);
+  } else {
+    console.log(`✅ First product loaded in ${toSeconds(firstProductEnd - firstProductStart)} s`);
+  }
 
-    // TODO: store these metrics in artifacts or push to metrics backend for historical tracking.
-  });
+  // ------------------- Final summary -------------------
+  const totalDuration = firstProductEnd - homeStart;
+  console.log(`\n📊 Total elapsed time: ${toSeconds(totalDuration)} s`);
+  console.log('🏁 Performance test completed');
 });

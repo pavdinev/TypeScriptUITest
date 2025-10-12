@@ -58,31 +58,31 @@ export class FiltersPage {
 
   const turkeyButton = page
     .getByRole('button', { name: 'Turkey', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .filter({ has: page.locator(':visible') });
 
   const porkButton = page
     .getByRole('button', { name: 'Pork', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .filter({ has: page.locator(':visible') });
 
   const fishButton = page
     .getByRole('button', { name: 'Fish', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .filter({ has: page.locator(':visible') });
 
   const kingPrawnButton = page
     .getByRole('button', { name: 'King Prawn', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .filter({ has: page.locator(':visible') });
 
   const steakSalmonPrawnButton = page
-    .getByRole('button', { name: 'Steak,Salmon & Prawn', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .getByRole('button', { name: 'Steak, Salmon & Prawn' })
+    .filter({ has: page.locator(':visible') });
 
   const steakPorkChickenTurkeyButton = page
-    .getByRole('button', { name: 'Steak,Pork,Chicken  & Turkey', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .getByRole('button', { name: 'Steak, Pork, Chicken & Turkey' })
+    .filter({ has: page.locator(':visible') });
 
   const wildBoarButton = page
-    .getByRole('button', { name: 'Wild Boar', exact: true })
-    .filter({ has: page.locator(':visible') }).nth(1);
+    .getByRole('button', { name: 'Wild Boar' })
+    .filter({ has: page.locator(':visible') });
 
     // 2️⃣ Wrap all locators in Button objects
     this.filterButtons = {
